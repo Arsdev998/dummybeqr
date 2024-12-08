@@ -1,0 +1,68 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Shop {
+  id          Int @id @default(autoincrement())
+  name        String
+  qrCodes     QRCode[]
+  product     Product[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Product {
+  id          Int    @id @default(autoincrement())
+  name        String   
+  price       Int
+  stock       Int
+  imgUrl      String?
+  sku         String
+  shopId      Int
+  shop        Shop  @relation(fields: [shopId], references: [id],onDelete: Cascade)
+  qrCode      QRCode[]
+  createdAt   DateTime @default(now())
+  updateAt    DateTime @updatedAt
+}
+
+model QRCode {
+  id             String   @id @default(cuid()) // Menggunakan cuid
+  shopId         Int   
+  shop           Shop     @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  count          Int      @default(0)
+  countLimit     Int
+  scanUrl        String
+  code           String
+  scanId         String?
+  batchId        String?
+  productId      Int
+  product        Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  sku            String?
+  distributorId  String?
+  manufactureId  String?
+  status         QRCodeStatus @default(ACTIVE)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+
+enum QRCodeStatus {
+  ACTIVE
+  INACTIVE
+  EXPIRED
+}
+
+
+
+
