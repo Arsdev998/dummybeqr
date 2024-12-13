@@ -101,12 +101,10 @@ const getQRCodeHistory = async (req, res) => {
 
     return res.status(200).json({
       data: groupedQRCodes,
-      pagination: {
-        page,
-        limit,
-        total,
-        totalPages: Math.ceil(total / limit),
-      },
+        current_page:page,
+        per_page:limit,
+        total:total,
+        last_page: Math.ceil(total / limit),
     });
   } catch (error) {
     console.error("Error fetching QR Code history:", error);
